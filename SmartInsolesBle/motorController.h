@@ -1,3 +1,4 @@
+#include "HardwareSerial.h"
 #pragma once
 #include <Arduino.h>
 #include "FsrService.h"
@@ -10,6 +11,7 @@ class MotorController {
     void update();
   private:
     IMUGY85* imu;
+    point _imuPoint;
     int rollOffset;
     int pitchOffset;
 
@@ -50,17 +52,19 @@ void MotorController::update()
     imuY = -MOTOR_AREA_HEIGHT/2;
   }
   point imuPoint = (point) {imuX, imuY};
-  Serial.printf("IMU point: %d,%d\n", imuX, imuY);
+  this->_imuPoint = imuPoint;
+  int weightFactor = this->fsrService->getWeightFactor();
+  // Serial.printf("IMU point: %d,%d\n", imuX, imuY);
+  
+  DATA_PRINT(imuX, imuY, weightFactor);
 
   point fsrPoint = this->fsrService->getGravityCenter();
-  Serial.printf("FSR point: %d,%d\n", fsrPoint.x, fsrPoint.y);
-
-  int weightFactor = this->fsrService->getWeightFactor();
+  // Serial.printf("FSR point: %d,%d\n", fsrPoint.x, fsrPoint.y);
 
   for(int i = 0; i < 4; i++) {
     int imuIntersection = motors[i].getImuIntersection(imuPoint);
     int fsrIntersection = motors[i].getFsrIntersection(fsrPoint);
-    Serial.printf("M: %d | %d, %d, %d\n", i, imuIntersection, fsrIntersection, weightFactor);
+    // Serial.printf("M: %d | %d, %d, %d\n", i, imuIntersection, fsrIntersection, weightFactor);
     
     uint16_t power = ENABLE_VIBRO * (ENABLE_IMU_VIBRO * imuIntersection + ENABLE_FSR_VIBRO * fsrIntersection * weightFactor);
     if (power > pow(2, MOTOR_PWM_RESOLUTION) - 1) {
@@ -68,4 +72,32 @@ void MotorController::update()
     }
     motors[i].setPower(power); 
   }
+}
+
+String MotorController::getImuBleData()
+{
+  String out = Serial.sprintf("%d,%d", this->_imuPoint.x, this->_imuPoint.y);
+  return out;
+}
+
+String MotorController::getFsrBleData()
+{
+  return this->fsrService->getBleData();
+}
+
+String MotorController::getGravityCenterBleData()
+{
+  float w = this->fsrService->getWeightFactor();
+  point gc = this->fsrService->getGravityCenter();
+  String out = Serial.sprintf("%d,%d,%.2f", gc.x, gc.y, w);
+  return out;
+}
+
+String MotorController::getMotorBleData()
+{
+  String out = "";
+  for (i = 0; i < 4; i++){
+    out += motors[i].getPower() + ",";
+  }
+  return out;
 }

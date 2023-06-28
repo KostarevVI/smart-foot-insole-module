@@ -65,3 +65,11 @@ float FsrService::getWeightFactor()
   return this->weightFactor;
 }
 
+String FsrService::getBleData()
+{
+  String out = "";
+  for (i = 0; i < 3; i++){
+    out += fsrArray[i].getValue() + ",";
+  }
+  return out;
+}

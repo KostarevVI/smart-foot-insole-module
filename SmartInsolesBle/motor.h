@@ -36,20 +36,25 @@ Motor::Motor(uint8_t channel, uint8_t pin, area imuArea, area fsrArea, float mot
 
 void Motor::setPower(uint16_t p)
 {
-  Serial.printf("Point %d;%d | Cannel: %d | power: %d\n", this->imuArea.center.x, this->imuArea.center.y, this->channel, p);
+  // Serial.printf("Point %d;%d | Cannel: %d | power: %d\n", this->imuArea.center.x, this->imuArea.center.y, this->channel, p);
   if (this->power != p){
     this->power = p;
     ledcWrite(this->channel, (int) (p/motorFactor));
   }
 }
 
+int Motor::getPower()
+{
+  return this->power;
+}
+
 bool Motor::isInArea(point p, area a)
 {
   bool xOk = (p.x <= a.center.x + a.width/2) && (p.x >= a.center.x - a.width/2);
-  Serial.printf("x_c: %d, p_x: %d, w: %d, xOk: %d\n", a.center.x, p.x, a.width, xOk);
+  // Serial.printf("x_c: %d, p_x: %d, w: %d, xOk: %d\n", a.center.x, p.x, a.width, xOk);
 
   bool yOk = (p.y <= a.center.y + a.height/2) && (p.y >= a.center.y - a.height/2);
-  Serial.printf("y_c: %d, p_y: %d, h: %d, yOk: %d\n", a.center.y, p.y, a.height, yOk);
+  // Serial.printf("y_c: %d, p_y: %d, h: %d, yOk: %d\n", a.center.y, p.y, a.height, yOk);
 
 
   if (xOk && yOk) {

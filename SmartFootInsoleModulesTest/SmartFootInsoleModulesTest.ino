@@ -7,19 +7,30 @@
 IMUGY85 imu;
 FsrService fsrService;
 MotorController motorController;
+int timer = 0;
 
 void setup() {
   Serial.begin(115200);
 
   imu.init();
+  for(;;) {
+    imu.update();
+    delay(10);
+    if (millis() - timer >= 5000) {
+      timer = millis();
+      break;
+    }
+  }
 
   motorController = MotorController(&imu, &fsrService);
 }
 
 void loop() {
-  imu.update();
-  fsrService.update();
-  motorController.update();
+  if (millis() - timer >= 20) {
+    timer = millis();
 
-  delay(20);
+    imu.update();
+    fsrService.update();
+    motorController.update();
+  }
 }
