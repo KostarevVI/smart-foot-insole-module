@@ -32,7 +32,7 @@
 - Переключатель двухпозиционный (1 шт.)
 
 ## Схематическое представление BLE сервисов и характеристик
-<img width="699" alt="image" src="https://github.com/KostarevVI/smart-foot-insole-module/assets/22761161/f2d089bf-0d9b-4f5a-b953-ab697825dfc5">
+![ma_diploma-BLE Services](https://github.com/KostarevVI/smart-foot-insole-module/assets/22761161/4925617f-a136-4f0d-9cee-41c2686da7bd)
 
 ## Использование
 1. Собрать устройство по схеме выше
